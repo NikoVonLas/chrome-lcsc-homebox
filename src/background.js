@@ -241,3 +241,11 @@ function buildNotes(p) {
 
   return lines.join('  \n');
 }
+
+if (typeof module !== 'undefined') {
+  module.exports = {
+    sanitize, stripHtml, buildItemName, buildNotes, flattenLocations,
+    getSettings, apiFetch, testConnection, getLocations,
+    saveToHomebox, uploadAttachment, fetchLcscViaTab,
+  };
+}

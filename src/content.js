@@ -191,3 +191,7 @@ new MutationObserver(() => {
     }
   }
 }).observe(document.body, { childList: true, subtree: true });
+
+if (typeof module !== 'undefined') {
+  module.exports = { extractCNumber, isContextValid, sendMsg, injectButton, setBtnLoading, removePicker, showToast };
+}
