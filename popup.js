@@ -1,25 +1,15 @@
 const $ = id => document.getElementById(id);
 const t = (key, ...subs) => chrome.i18n.getMessage(key, subs);
 
-function applyI18n() {
-  document.querySelectorAll('[data-i18n]').forEach(el => {
-    el.textContent = t(el.dataset.i18n);
-  });
-}
-
-async function load() {
-  applyI18n();
-  const data = await chrome.storage.sync.get(['hbUrl', 'hbToken', 'lcscInSerial']);
-  if (data.hbUrl)   $('hbUrl').value   = data.hbUrl;
-  if (data.hbToken) $('hbToken').value = data.hbToken;
-  $('lcscInSerial').checked = data.lcscInSerial !== false;
-}
-
 function setStatus(msg, type) {
   const el = $('status');
   el.textContent = msg;
   el.className = `status ${type}`;
 }
+
+document.querySelectorAll('[data-i18n]').forEach(el => {
+  el.textContent = t(el.dataset.i18n);
+});
 
 $('btnSave').addEventListener('click', async () => {
   const hbUrl   = $('hbUrl').value.trim().replace(/\/$/, '');
@@ -62,4 +52,7 @@ $('btnTest').addEventListener('click', async () => {
   );
 });
 
-load();
+const data = await chrome.storage.sync.get(['hbUrl', 'hbToken', 'lcscInSerial']);
+if (data.hbUrl)   $('hbUrl').value   = data.hbUrl;
+if (data.hbToken) $('hbToken').value = data.hbToken;
+$('lcscInSerial').checked = data.lcscInSerial !== false;

@@ -6,6 +6,8 @@
 
 A browser extension that saves LCSC components to [Homebox](https://github.com/sysadminsmedia/homebox) in one click — with images, datasheet, specs, and manufacturer info.
 
+> Tested with Homebox **0.26.0-rc.1**. Uses the unified `/api/v1/entities` API introduced in that version.
+
 ## Features
 
 - Reads component data directly from the page — no extra network requests

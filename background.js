@@ -39,18 +39,18 @@ async function fetchLcscViaTab(tabId, cNumber) {
         return null;
       }
       try {
-        const nd = window.__NEXT_DATA__;
+        const nd = globalThis.__NEXT_DATA__;
         if (nd) {
           const p = findInObj(nd.props, 0);
           if (p) return { ok: true, data: p };
           return { ok: false, error: 'NEXT_DATA: product not found. props keys: ' + Object.keys(nd.props || {}).join(', ') };
         }
-        const nuxt = window.__NUXT__ || window.__INITIAL_STATE__ || window.__STORE__;
+        const nuxt = globalThis.__NUXT__ || globalThis.__INITIAL_STATE__ || globalThis.__STORE__;
         if (nuxt) {
           const p = findInObj(nuxt, 0);
           if (p) return { ok: true, data: p };
         }
-        const globals = Object.keys(window).filter(k => k.startsWith('__')).slice(0, 20).join(', ');
+        const globals = Object.keys(globalThis).filter(k => k.startsWith('__')).slice(0, 20).join(', ');
         return { ok: false, error: 'No page data. Globals: ' + globals };
       } catch (e) {
         return { ok: false, error: e.message };
