@@ -1,0 +1,16 @@
+{
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "lcsc-homebox@nikovonlas",
+      "strict_min_version": "121.0",
+      "data_collection_permissions": {
+        "required": [],
+        "optional": []
+      }
+    }
+  },
+  "background": {
+    "service_worker": "background.js",
+    "scripts": ["background.js"]
+  }
+}

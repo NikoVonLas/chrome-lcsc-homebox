@@ -15,4 +15,14 @@ jobs:
         with:
           node-version: 22
 
-      - run: npx --yes web-ext lint --source-dir . --ignore-files .github --target chromium
+      - run: npm install -g web-ext
+
+      - name: Lint (Chromium)
+        run: web-ext lint --source-dir . --ignore-files .github --target chromium
+
+      - name: Lint (Firefox)
+        run: |
+          mkdir /tmp/ff-lint
+          cp -r . /tmp/ff-lint/
+          jq -s '.[0] * .[1]' manifest.json manifest.firefox.patch.json > /tmp/ff-lint/manifest.json
+          web-ext lint --source-dir /tmp/ff-lint --ignore-files .github --target firefox
