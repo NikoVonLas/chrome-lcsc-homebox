@@ -38,6 +38,9 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    env:
+      HAS_CHROME_SECRETS: ${{ secrets.CHROME_EXTENSION_ID != '' }}
+      HAS_AMO_SECRETS: ${{ secrets.AMO_JWT_ISSUER != '' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -57,7 +60,7 @@ jobs:
         run: zip -r extension-chrome.zip . -x "*.git*" -x "*.github*" -x "manifest.firefox.patch.json" -x "sonar-project.properties"
 
       - name: Publish to Chrome Web Store
-        if: ${{ secrets.CHROME_EXTENSION_ID != '' }}
+        if: env.HAS_CHROME_SECRETS == 'true'
         uses: mnao305/chrome-extension-upload@fdfe79400af990f5145a319e834aee64907ccff4 # v6.0.0
         with:
           extension-id: ${{ secrets.CHROME_EXTENSION_ID }}
@@ -70,7 +73,7 @@ jobs:
         run: jq -s '.[0] * .[1]' manifest.json manifest.firefox.patch.json > manifest.tmp.json && mv manifest.tmp.json manifest.json
 
       - name: Sign & submit to AMO
-        if: ${{ secrets.AMO_JWT_ISSUER != '' }}
+        if: env.HAS_AMO_SECRETS == 'true'
         env:
           AMO_KEY: ${{ secrets.AMO_JWT_ISSUER }}
           AMO_SECRET: ${{ secrets.AMO_JWT_SECRET }}
