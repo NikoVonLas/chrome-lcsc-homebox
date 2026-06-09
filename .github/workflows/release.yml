@@ -20,10 +20,10 @@ jobs:
       - run: npm install -g web-ext
 
       - name: Apply Firefox manifest patch
-        run: jq -s '.[0] * .[1]' manifest.json manifest.firefox.patch.json > manifest.tmp.json && mv manifest.tmp.json manifest.json
+        run: jq -s '.[0] * .[1]' src/manifest.json manifest.firefox.patch.json > src/manifest.tmp.json && mv src/manifest.tmp.json src/manifest.json
 
       - name: Lint
-        run: web-ext lint --source-dir . --ignore-files .github
+        run: web-ext lint --source-dir src
 
       - name: SonarCloud Quality Gate
         uses: SonarSource/sonarcloud-github-action@ffc3010689be73b8e5ae0c57ce35968afd7909e8 # v5.0.0
@@ -53,11 +53,11 @@ jobs:
       - name: Set version from tag
         run: |
           VERSION="${GITHUB_REF_NAME#v}"
-          jq --arg v "$VERSION" '.version = $v' manifest.json > manifest.tmp.json
-          mv manifest.tmp.json manifest.json
+          jq --arg v "$VERSION" '.version = $v' src/manifest.json > src/manifest.tmp.json
+          mv src/manifest.tmp.json src/manifest.json
 
       - name: Build Chrome ZIP
-        run: zip -r extension-chrome.zip . -x "*.git*" -x "*.github*" -x "manifest.firefox.patch.json" -x "sonar-project.properties"
+        run: cd src && zip -r ../extension-chrome.zip .
 
       - name: Publish to Chrome Web Store
         if: env.HAS_CHROME_SECRETS == 'true'
@@ -70,18 +70,18 @@ jobs:
           refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}
 
       - name: Apply Firefox manifest patch
-        run: jq -s '.[0] * .[1]' manifest.json manifest.firefox.patch.json > manifest.tmp.json && mv manifest.tmp.json manifest.json
+        run: jq -s '.[0] * .[1]' src/manifest.json manifest.firefox.patch.json > src/manifest.tmp.json && mv src/manifest.tmp.json src/manifest.json
 
       - name: Sign & submit to AMO
         if: env.HAS_AMO_SECRETS == 'true'
         env:
           AMO_KEY: ${{ secrets.AMO_JWT_ISSUER }}
           AMO_SECRET: ${{ secrets.AMO_JWT_SECRET }}
-        run: web-ext sign --source-dir . --channel listed --api-key "$AMO_KEY" --api-secret "$AMO_SECRET" --artifacts-dir ./web-ext-artifacts
+        run: web-ext sign --source-dir src --channel listed --api-key "$AMO_KEY" --api-secret "$AMO_SECRET" --artifacts-dir ./web-ext-artifacts
         continue-on-error: true
 
       - name: Build Firefox ZIP
-        run: zip -r extension-firefox.zip . -x "*.git*" -x "*.github*" -x "manifest.firefox.patch.json" -x "sonar-project.properties"
+        run: cd src && zip -r ../extension-firefox.zip .
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2

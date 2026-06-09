@@ -18,7 +18,7 @@ jobs:
       - run: npm install -g web-ext
 
       - name: Apply Firefox manifest patch
-        run: jq -s '.[0] * .[1]' manifest.json manifest.firefox.patch.json > manifest.tmp.json && mv manifest.tmp.json manifest.json
+        run: jq -s '.[0] * .[1]' src/manifest.json manifest.firefox.patch.json > src/manifest.tmp.json && mv src/manifest.tmp.json src/manifest.json
 
       - name: Lint
-        run: web-ext lint --source-dir . --ignore-files .github
+        run: web-ext lint --source-dir src
