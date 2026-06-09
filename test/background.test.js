@@ -4,7 +4,7 @@ chrome.scripting = { executeScript: jest.fn() };
 const {
   sanitize, stripHtml, buildItemName, buildNotes, flattenLocations,
   getSettings, apiFetch, testConnection, getLocations,
-  saveToHomebox, uploadAttachment, fetchLcscViaTab,
+  saveToHomebox, uploadAttachment, fetchLcscViaTab, _pageScript,
 } = require('../src/background');
 
 // Capture the message listener before any mock resets
@@ -189,26 +189,111 @@ describe('fetchLcscViaTab', () => {
   });
 });
 
+// ── _pageScript ───────────────────────────────────────────────────────────────
+
+describe('_pageScript', () => {
+  const product = { productCode: 'C2040', paramVOList: [] };
+
+  afterEach(() => {
+    delete globalThis.__NEXT_DATA__;
+    delete globalThis.__NUXT__;
+    delete globalThis.__INITIAL_STATE__;
+    delete globalThis.__STORE__;
+  });
+
+  test('finds product directly in __NEXT_DATA__.props', () => {
+    globalThis.__NEXT_DATA__ = { props: { ...product } };
+    expect(_pageScript('C2040')).toEqual({ ok: true, data: product });
+  });
+
+  test('finds product nested inside __NEXT_DATA__.props', () => {
+    globalThis.__NEXT_DATA__ = { props: { pageProps: { ...product } } };
+    expect(_pageScript('C2040')).toEqual({ ok: true, data: product });
+  });
+
+  test('returns error when __NEXT_DATA__ has no matching product', () => {
+    globalThis.__NEXT_DATA__ = { props: { other: 'data' } };
+    const result = _pageScript('C9999');
+    expect(result.ok).toBe(false);
+    expect(result.error).toContain('NEXT_DATA');
+  });
+
+  test('finds product in __NUXT__', () => {
+    globalThis.__NUXT__ = { ...product };
+    expect(_pageScript('C2040')).toEqual({ ok: true, data: product });
+  });
+
+  test('finds product in __INITIAL_STATE__', () => {
+    globalThis.__INITIAL_STATE__ = { ...product };
+    expect(_pageScript('C2040')).toEqual({ ok: true, data: product });
+  });
+
+  test('finds product in __STORE__', () => {
+    globalThis.__STORE__ = { ...product };
+    expect(_pageScript('C2040')).toEqual({ ok: true, data: product });
+  });
+
+  test('returns No page data error when nothing found', () => {
+    const result = _pageScript('C0000');
+    expect(result.ok).toBe(false);
+    expect(result.error).toContain('No page data');
+  });
+
+  test('falls through to No page data when __NUXT__ has no matching product', () => {
+    globalThis.__NUXT__ = { other: 'data' };
+    const result = _pageScript('C9999');
+    expect(result.ok).toBe(false);
+    expect(result.error).toContain('No page data');
+  });
+
+  test('returns error on exception', () => {
+    Object.defineProperty(globalThis, '__NEXT_DATA__', {
+      get() { throw new Error('access denied'); },
+      configurable: true,
+    });
+    const result = _pageScript('C0000');
+    expect(result.ok).toBe(false);
+    expect(result.error).toBe('access denied');
+  });
+
+  test('stops recursion at depth > 10 and reports not found', () => {
+    let nested = { productCode: 'C2040' };
+    for (let i = 0; i < 11; i++) nested = { child: nested };
+    globalThis.__NEXT_DATA__ = { props: nested };
+    const result = _pageScript('C2040');
+    expect(result.ok).toBe(false);
+    expect(result.error).toContain('NEXT_DATA');
+  });
+});
+
 // ── uploadAttachment ──────────────────────────────────────────────────────────
 
 describe('uploadAttachment', () => {
-  test('returns early on network error', async () => {
+  test('returns early on network error (catch branch)', async () => {
     global.fetch.mockRejectedValue(new Error('network'));
     await expect(uploadAttachment('http://box', 'tok', 'id', 'http://img', 'f.jpg', 'photo', true))
       .resolves.toBeUndefined();
+    expect(global.fetch).toHaveBeenCalledTimes(1);
   });
   test('returns early when file fetch not ok', async () => {
     global.fetch.mockResolvedValue({ ok: false });
     await expect(uploadAttachment('http://box', 'tok', 'id', 'http://img', 'f.jpg', 'photo', true))
       .resolves.toBeUndefined();
   });
-  test('downloads and uploads attachment', async () => {
+  test('downloads and uploads, calls upload endpoint', async () => {
     global.fetch
       .mockResolvedValueOnce({ ok: true, blob: () => Promise.resolve(new Blob(['x'])) })
       .mockResolvedValueOnce({ ok: true });
-    await expect(uploadAttachment('http://box', 'tok', 'id', 'http://img', 'f.jpg', 'photo', true))
-      .resolves.toBeUndefined();
-    expect(global.fetch).toHaveBeenCalledWith('http://img');
+    await uploadAttachment('http://box', 'tok', 'id', 'http://img', 'f.jpg', 'photo', true);
+    expect(global.fetch).toHaveBeenCalledTimes(2);
+    expect(global.fetch.mock.calls[1][0]).toContain('/attachments');
+  });
+  test('upload without primary flag omits primary field', async () => {
+    global.fetch
+      .mockResolvedValueOnce({ ok: true, blob: () => Promise.resolve(new Blob(['x'])) })
+      .mockResolvedValueOnce({ ok: true });
+    await uploadAttachment('http://box', 'tok', 'id', 'http://img', 'f.jpg', 'photo', false);
+    expect(global.fetch).toHaveBeenCalledTimes(2);
   });
 });
 
@@ -238,6 +323,14 @@ describe('message listener', () => {
       .mockResolvedValueOnce({ ok: true });
     const result = messageListener({ type: 'SAVE_TO_HOMEBOX', cNumber: 'C1', locationId: null }, { tab: { id: 1 } }, jest.fn());
     expect(result).toBe(true);
+  });
+
+  test('SAVE_TO_HOMEBOX calls sendResponse with error when chain rejects', async () => {
+    chrome.scripting.executeScript.mockResolvedValue([{ result: null }]);
+    const sendResponse = jest.fn();
+    messageListener({ type: 'SAVE_TO_HOMEBOX', cNumber: 'C1', locationId: null }, { tab: { id: 1 } }, sendResponse);
+    await new Promise(r => setTimeout(r, 0));
+    expect(sendResponse).toHaveBeenCalledWith(expect.objectContaining({ error: expect.any(String) }));
   });
 });
 

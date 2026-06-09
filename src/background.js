@@ -23,39 +23,41 @@ const t = (key, ...subs) => chrome.i18n.getMessage(key, subs);
 
 // ── LCSC ─────────────────────────────────────────────────────────────────────
 
+function _pageScript(code) {
+  function findInObj(obj, depth) {
+    if (depth > 10 || !obj || typeof obj !== 'object') return null;
+    if (obj.productCode === code) return obj;
+    for (const v of Object.values(obj)) {
+      const r = findInObj(v, depth + 1);
+      if (r) return r;
+    }
+    return null;
+  }
+  try {
+    const nd = globalThis.__NEXT_DATA__;
+    if (nd) {
+      const p = findInObj(nd.props, 0);
+      if (p) return { ok: true, data: p };
+      return { ok: false, error: 'NEXT_DATA: product not found. props keys: ' + Object.keys(nd.props || {}).join(', ') };
+    }
+    const nuxt = globalThis.__NUXT__ || globalThis.__INITIAL_STATE__ || globalThis.__STORE__;
+    if (nuxt) {
+      const p = findInObj(nuxt, 0);
+      if (p) return { ok: true, data: p };
+    }
+    const globals = Object.keys(globalThis).filter(k => k.startsWith('__')).slice(0, 20).join(', ');
+    return { ok: false, error: 'No page data. Globals: ' + globals };
+  } catch (e) {
+    return { ok: false, error: e.message };
+  }
+}
+
 async function fetchLcscViaTab(tabId, cNumber) {
   if (!tabId) throw new Error(t('errNoTab'));
   const results = await chrome.scripting.executeScript({
     target: { tabId },
     world: 'MAIN',
-    func: (code) => {
-      function findInObj(obj, depth) {
-        if (depth > 10 || !obj || typeof obj !== 'object') return null;
-        if (obj.productCode === code) return obj;
-        for (const v of Object.values(obj)) {
-          const r = findInObj(v, depth + 1);
-          if (r) return r;
-        }
-        return null;
-      }
-      try {
-        const nd = globalThis.__NEXT_DATA__;
-        if (nd) {
-          const p = findInObj(nd.props, 0);
-          if (p) return { ok: true, data: p };
-          return { ok: false, error: 'NEXT_DATA: product not found. props keys: ' + Object.keys(nd.props || {}).join(', ') };
-        }
-        const nuxt = globalThis.__NUXT__ || globalThis.__INITIAL_STATE__ || globalThis.__STORE__;
-        if (nuxt) {
-          const p = findInObj(nuxt, 0);
-          if (p) return { ok: true, data: p };
-        }
-        const globals = Object.keys(globalThis).filter(k => k.startsWith('__')).slice(0, 20).join(', ');
-        return { ok: false, error: 'No page data. Globals: ' + globals };
-      } catch (e) {
-        return { ok: false, error: e.message };
-      }
-    },
+    func: _pageScript,
     args: [cNumber],
   });
   const res = results[0]?.result;
@@ -246,6 +248,6 @@ if (typeof module !== 'undefined') {
   module.exports = {
     sanitize, stripHtml, buildItemName, buildNotes, flattenLocations,
     getSettings, apiFetch, testConnection, getLocations,
-    saveToHomebox, uploadAttachment, fetchLcscViaTab,
+    saveToHomebox, uploadAttachment, fetchLcscViaTab, _pageScript,
   };
 }
