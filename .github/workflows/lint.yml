@@ -15,4 +15,4 @@ jobs:
         with:
           node-version: 22
 
-      - run: npx --yes web-ext lint --source-dir . --ignore-files .github
+      - run: npx --yes web-ext lint --source-dir . --ignore-files .github --target chromium
