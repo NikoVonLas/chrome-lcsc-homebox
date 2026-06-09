@@ -33,7 +33,10 @@ jobs:
 
       - name: Sign & submit to AMO
         if: ${{ secrets.AMO_JWT_ISSUER != '' }}
-        run: web-ext sign --source-dir . --channel listed --api-key ${{ secrets.AMO_JWT_ISSUER }} --api-secret ${{ secrets.AMO_JWT_SECRET }} --artifacts-dir ./web-ext-artifacts
+        env:
+          AMO_KEY: ${{ secrets.AMO_JWT_ISSUER }}
+          AMO_SECRET: ${{ secrets.AMO_JWT_SECRET }}
+        run: web-ext sign --source-dir . --channel listed --api-key "$AMO_KEY" --api-secret "$AMO_SECRET" --artifacts-dir ./web-ext-artifacts
         continue-on-error: true
 
       - name: Build Firefox ZIP
