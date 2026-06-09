@@ -212,7 +212,15 @@ async function uploadAttachment(base, token, entityId, fileUrl, filename, type, 
 }
 
 function stripHtml(str) {
-  return (str || '').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+  if (!str) return '';
+  const chars = [];
+  let inTag = false;
+  for (const ch of str) {
+    if (ch === '<') inTag = true;
+    else if (ch === '>') inTag = false;
+    else if (!inTag) chars.push(ch);
+  }
+  return chars.join('').replace(/\s+/g, ' ').trim();
 }
 
 function buildItemName(p) {

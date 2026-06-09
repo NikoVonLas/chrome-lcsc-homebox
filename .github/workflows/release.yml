@@ -6,7 +6,35 @@ on:
       - "v*"
 
 jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - run: npm install -g web-ext
+
+      - name: Apply Firefox manifest patch
+        run: jq -s '.[0] * .[1]' manifest.json manifest.firefox.patch.json > manifest.tmp.json && mv manifest.tmp.json manifest.json
+
+      - name: Lint
+        run: web-ext lint --source-dir . --ignore-files .github
+
+      - name: SonarCloud Quality Gate
+        uses: SonarSource/sonarcloud-github-action@ffc3010689be73b8e5ae0c57ce35968afd7909e8 # v5.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: -Dsonar.qualitygate.wait=true
+
   release:
+    needs: gate
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -26,17 +54,17 @@ jobs:
           mv manifest.tmp.json manifest.json
 
       - name: Build Chrome ZIP
-        run: zip -r extension-chrome.zip . -x "*.git*" -x "*.github*" -x "manifest.firefox.patch.json"
+        run: zip -r extension-chrome.zip . -x "*.git*" -x "*.github*" -x "manifest.firefox.patch.json" -x "sonar-project.properties"
 
       - name: Publish to Chrome Web Store
         if: ${{ secrets.CHROME_EXTENSION_ID != '' }}
-        uses: fregante/chrome-webstore-upload-action@v2
+        uses: wdzeng/chrome-extension@22dd6c4424da580f0e6bb277641c331cff64240a # v1.3.1
         with:
           extension-id: ${{ secrets.CHROME_EXTENSION_ID }}
+          zip-path: extension-chrome.zip
           client-id: ${{ secrets.CHROME_CLIENT_ID }}
           client-secret: ${{ secrets.CHROME_CLIENT_SECRET }}
           refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}
-          file-name: extension-chrome.zip
 
       - name: Apply Firefox manifest patch
         run: jq -s '.[0] * .[1]' manifest.json manifest.firefox.patch.json > manifest.tmp.json && mv manifest.tmp.json manifest.json
@@ -50,10 +78,10 @@ jobs:
         continue-on-error: true
 
       - name: Build Firefox ZIP
-        run: zip -r extension-firefox.zip . -x "*.git*" -x "*.github*" -x "manifest.firefox.patch.json"
+        run: zip -r extension-firefox.zip . -x "*.git*" -x "*.github*" -x "manifest.firefox.patch.json" -x "sonar-project.properties"
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2
         with:
           files: |
             extension-chrome.zip
