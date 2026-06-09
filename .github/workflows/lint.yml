@@ -17,12 +17,8 @@ jobs:
 
       - run: npm install -g web-ext
 
-      - name: Lint (Chromium)
-        run: web-ext lint --source-dir . --ignore-files .github --target chromium
+      - name: Apply Firefox manifest patch
+        run: jq -s '.[0] * .[1]' manifest.json manifest.firefox.patch.json > manifest.tmp.json && mv manifest.tmp.json manifest.json
 
-      - name: Lint (Firefox)
-        run: |
-          mkdir /tmp/ff-lint
-          cp -r . /tmp/ff-lint/
-          jq -s '.[0] * .[1]' manifest.json manifest.firefox.patch.json > /tmp/ff-lint/manifest.json
-          web-ext lint --source-dir /tmp/ff-lint --ignore-files .github --target firefox
+      - name: Lint
+        run: web-ext lint --source-dir . --ignore-files .github
