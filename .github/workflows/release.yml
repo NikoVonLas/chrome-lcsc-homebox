@@ -58,10 +58,10 @@ jobs:
 
       - name: Publish to Chrome Web Store
         if: ${{ secrets.CHROME_EXTENSION_ID != '' }}
-        uses: wdzeng/chrome-extension@22dd6c4424da580f0e6bb277641c331cff64240a # v1.3.1
+        uses: mnao305/chrome-extension-upload@fdfe79400af990f5145a319e834aee64907ccff4 # v6.0.0
         with:
           extension-id: ${{ secrets.CHROME_EXTENSION_ID }}
-          zip-path: extension-chrome.zip
+          file-path: extension-chrome.zip
           client-id: ${{ secrets.CHROME_CLIENT_ID }}
           client-secret: ${{ secrets.CHROME_CLIENT_SECRET }}
           refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}
