@@ -2,11 +2,7 @@
   "browser_specific_settings": {
     "gecko": {
       "id": "lcsc-homebox@nikovonlas",
-      "strict_min_version": "121.0",
-      "data_collection_permissions": {
-        "required": [],
-        "optional": []
-      }
+      "strict_min_version": "128.0"
     }
   },
   "background": {
