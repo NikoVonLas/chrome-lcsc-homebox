@@ -1,0 +1,113 @@
+#hb-save-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  margin-left: 6px;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  color: #484a4d;
+  flex-shrink: 0;
+  transition: color 0.15s, opacity 0.15s;
+  vertical-align: middle;
+}
+
+#hb-save-btn:hover {
+  color: #1166dd;
+}
+
+#hb-save-btn.hb-loading {
+  opacity: 0.35;
+  cursor: wait;
+}
+
+/* Треугольник (play-кнопка) — синий, как primary в Homebox */
+#hb-save-btn .hb-fill-primary {
+  fill: #1166dd;
+}
+
+.hb-toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 18px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  z-index: 999999;
+  animation: hb-slide-in 0.25s ease;
+}
+
+.hb-toast--success { background: #16a34a; }
+.hb-toast--error   { background: #dc2626; }
+
+.hb-toast a {
+  color: #fff;
+  text-decoration: underline;
+  white-space: nowrap;
+}
+
+@keyframes hb-slide-in {
+  from { transform: translateY(16px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+#hb-picker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 8px 0;
+  padding: 10px 12px;
+  background: #f0f4ff;
+  border: 1px solid #c7d7fc;
+  border-radius: 8px;
+  animation: hb-slide-in 0.2s ease;
+}
+
+#hb-loc-select {
+  flex: auto;
+  padding: 6px 8px;
+  border: 1px solid #c7d7fc;
+  border-radius: 6px;
+  font-size: 13px;
+  background: #fff;
+  color: #111827;
+  cursor: pointer;
+}
+
+
+.hb-picker-save {
+  padding: 6px 14px;
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.hb-picker-save:hover:not(:disabled) { background: #1d4ed8; }
+.hb-picker-save:disabled { opacity: 0.65; cursor: not-allowed; }
+
+.hb-picker-cancel {
+  padding: 6px 10px;
+  background: transparent;
+  color: #6b7280;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.hb-picker-cancel:hover { background: #f3f4f6; }

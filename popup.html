@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LCSC → Homebox</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <h1>LCSC → Homebox</h1>
+
+  <div class="field">
+    <label for="hbUrl" data-i18n="labelUrl">Homebox URL</label>
+    <input type="url" id="hbUrl" placeholder="http://192.168.1.100:7745">
+  </div>
+
+  <div class="field">
+    <label for="hbToken">
+      <span data-i18n="labelToken">API Token</span>
+      <span class="hint" data-i18n="hintToken">Homebox → Profile → API Keys</span>
+    </label>
+    <input type="password" id="hbToken" placeholder="hb_xxxxxxxxxxxxxxxx">
+  </div>
+
+  <div class="field field--toggle">
+    <label class="toggle-label" for="lcscInSerial">
+      <span data-i18n="labelLcscSerial">Save LCSC Part # as Serial Number</span>
+      <input type="checkbox" id="lcscInSerial" checked>
+      <span class="toggle-track"><span class="toggle-thumb"></span></span>
+    </label>
+  </div>
+
+  <div class="actions">
+    <button id="btnSave" data-i18n="btnSave">Save</button>
+    <button id="btnTest" class="secondary" data-i18n="btnTest">Test Connection</button>
+  </div>
+
+  <div id="status" class="status"></div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

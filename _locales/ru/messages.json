@@ -1,0 +1,34 @@
+{
+  "extName":           { "message": "LCSC → Homebox" },
+  "extDescription":    { "message": "Сохраняй компоненты с lcsc.com прямо в Homebox" },
+
+  "labelUrl":          { "message": "URL Homebox" },
+  "labelToken":        { "message": "API-токен" },
+  "hintToken":         { "message": "Homebox → Профиль → API-ключи" },
+  "labelLcscSerial":   { "message": "Сохранять LCSC Part # в Serial Number" },
+  "btnSave":           { "message": "Сохранить" },
+  "btnTest":           { "message": "Проверить соединение" },
+
+  "statusFillFields":  { "message": "Заполните URL и токен" },
+  "statusSaved":       { "message": "Настройки сохранены" },
+  "statusTesting":     { "message": "Проверяю..." },
+  "statusConnected":   { "message": "Подключено: $1", "placeholders": { "1": { "content": "$1" } } },
+  "statusError":       { "message": "Ошибка: $1",     "placeholders": { "1": { "content": "$1" } } },
+
+  "btnTitleSave":      { "message": "Сохранить в Homebox" },
+  "pickerNoLocation":  { "message": "Без локации" },
+  "pickerSave":        { "message": "Сохранить" },
+  "pickerCancel":      { "message": "✕" },
+
+  "toastSaved":        { "message": "Сохранено в Homebox" },
+  "toastOpen":         { "message": "Открыть" },
+  "toastReload":       { "message": "Расширение обновилось — перезагрузи страницу (F5)" },
+  "toastNoCNumber":    { "message": "Не удалось определить артикул LCSC" },
+  "toastError":        { "message": "Ошибка: $1", "placeholders": { "1": { "content": "$1" } } },
+
+  "errConfigure":      { "message": "Настройте расширение: укажите URL и токен Homebox" },
+  "errSettingsEmpty":  { "message": "Не заполнены настройки" },
+  "errNoTab":          { "message": "Не удалось определить вкладку" },
+  "errLcscNoProduct":  { "message": "Продукт не найден в данных страницы" },
+  "errLcscNoData":     { "message": "Данные страницы не найдены" }
+}

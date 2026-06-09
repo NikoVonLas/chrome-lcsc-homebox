@@ -1,0 +1,34 @@
+{
+  "extName":           { "message": "LCSC → Homebox" },
+  "extDescription":    { "message": "Save components from lcsc.com directly to Homebox" },
+
+  "labelUrl":          { "message": "Homebox URL" },
+  "labelToken":        { "message": "API Token" },
+  "hintToken":         { "message": "Homebox → Profile → API Keys" },
+  "labelLcscSerial":   { "message": "Save LCSC Part # as Serial Number" },
+  "btnSave":           { "message": "Save" },
+  "btnTest":           { "message": "Test Connection" },
+
+  "statusFillFields":  { "message": "Fill in URL and token" },
+  "statusSaved":       { "message": "Settings saved" },
+  "statusTesting":     { "message": "Testing..." },
+  "statusConnected":   { "message": "Connected: $1", "placeholders": { "1": { "content": "$1" } } },
+  "statusError":       { "message": "Error: $1",     "placeholders": { "1": { "content": "$1" } } },
+
+  "btnTitleSave":      { "message": "Save to Homebox" },
+  "pickerNoLocation":  { "message": "No location" },
+  "pickerSave":        { "message": "Save" },
+  "pickerCancel":      { "message": "✕" },
+
+  "toastSaved":        { "message": "Saved to Homebox" },
+  "toastOpen":         { "message": "Open" },
+  "toastReload":       { "message": "Extension updated — reload the page (F5)" },
+  "toastNoCNumber":    { "message": "Could not determine LCSC part number" },
+  "toastError":        { "message": "Error: $1", "placeholders": { "1": { "content": "$1" } } },
+
+  "errConfigure":      { "message": "Configure extension: enter Homebox URL and token" },
+  "errSettingsEmpty":  { "message": "Settings not filled" },
+  "errNoTab":          { "message": "Could not determine tab" },
+  "errLcscNoProduct":  { "message": "Product not found in page data" },
+  "errLcscNoData":     { "message": "No page data found" }
+}
