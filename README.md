@@ -3,6 +3,7 @@
 [![Lint](https://github.com/NikoVonLas/chrome-lcsc-homebox/actions/workflows/lint.yml/badge.svg)](https://github.com/NikoVonLas/chrome-lcsc-homebox/actions/workflows/lint.yml)
 [![GitHub Release](https://img.shields.io/github/v/release/NikoVonLas/chrome-lcsc-homebox)](https://github.com/NikoVonLas/chrome-lcsc-homebox/releases/latest)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=NikoVonLas_chrome-lcsc-homebox&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=NikoVonLas_chrome-lcsc-homebox)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=NikoVonLas_chrome-lcsc-homebox&metric=coverage)](https://sonarcloud.io/summary/new_code?id=NikoVonLas_chrome-lcsc-homebox)
 
 A browser extension that saves LCSC components to [Homebox](https://github.com/sysadminsmedia/homebox) in one click — with images, datasheet, specs, and manufacturer info.
 
